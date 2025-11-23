@@ -216,95 +216,6 @@ def predict():
         # Return mock prediction on error
         return jsonify(get_mock_prediction(request.json))
 
-@app.route('/batch_predict', methods=['POST'])
-def batch_predict():
-    """Batch prediction endpoint for multiple transactions"""
-    try:
-        transactions = request.json.get('transactions', [])
-        results = []
-        
-        for transaction in transactions:
-            # Process each transaction
-            if model_artifacts:
-                # Use actual model prediction logic (same as single predict)
-                # ... (implementation similar to predict endpoint)
-                pass
-            else:
-                # Use mock prediction
-                result = get_mock_prediction(transaction)
-                results.append(result)
-        
-        return jsonify({'predictions': results})
-        
-    except Exception as e:
-        logger.error(f"Error in batch prediction: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/model_info', methods=['GET'])
-def model_info():
-    """Get information about the loaded model"""
-    if model_artifacts:
-        info = {
-            'model_type': 'XGBoost',
-            'features': model_artifacts.get('feature_cols', []),
-            'performance': {
-                'roc_auc': 0.929,
-                'precision': 0.761,
-                'recall': 0.897,
-                'f1_score': 0.823
-            },
-            'training_info': {
-                'dataset_size': 647,
-                'fraud_rate': 0.2396,
-                'features_count': 23
-            }
-        }
-    else:
-        info = {
-            'model_type': 'Mock',
-            'message': 'Using mock predictions as model is not loaded',
-            'features': [],
-            'performance': {
-                'roc_auc': 'N/A',
-                'precision': 'N/A',
-                'recall': 'N/A',
-                'f1_score': 'N/A'
-            }
-        }
-    
-    return jsonify(info)
-
-@app.route('/analytics', methods=['GET'])
-def analytics():
-    """Get analytics data (mock data for demo)"""
-    # In production, this would query a database
-    analytics_data = {
-        'total_transactions': 647,
-        'fraud_detected': 155,
-        'fraud_rate': 23.96,
-        'avg_amount': 1234.56,
-        'risk_distribution': {
-            'HIGH': 45,
-            'MEDIUM': 67,
-            'LOW': 535
-        },
-        'recent_trends': [
-            {'date': '2024-01-15', 'total': 92, 'fraud': 22},
-            {'date': '2024-01-16', 'total': 87, 'fraud': 19},
-            {'date': '2024-01-17', 'total': 95, 'fraud': 24},
-            {'date': '2024-01-18', 'total': 91, 'fraud': 21},
-            {'date': '2024-01-19', 'total': 93, 'fraud': 23},
-            {'date': '2024-01-20', 'total': 96, 'fraud': 25},
-            {'date': '2024-01-21', 'total': 93, 'fraud': 21},
-        ],
-        'performance_metrics': {
-            'accuracy': 0.914,
-            'detection_rate': 0.897,
-            'false_positive_rate': 0.089
-        }
-    }
-    
-    return jsonify(analytics_data)
 
 # ==================== ERROR HANDLERS ====================
 
@@ -326,5 +237,5 @@ if __name__ == '__main__':
     app.run(
         host='0.0.0.0',  # Allow external connections
         port=5000,
-        debug=True  # Set to False in production
+        debug=False  # Set to False in production
     )
